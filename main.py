@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 def main():
     """主函数示例"""
-    print("=== 流媒体可播放性监控系统 ===\n")
+    print("=== 流媒体可播放性监控系统 ===")
 
     # 使用简化的监控器
     stream_url = "http://192.168.8.125/live/livestream.flv"
