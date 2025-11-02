@@ -42,10 +42,8 @@ if __name__ == '__main__':
     config = get_config()
     log.info(config.get("monitoring.playability.enabled"))
     log.info(config.get("monitoring.playability.health_checks.connection_timeout"))
-    streams =config.get("streams")
+    streams = config.get("streams")
     for stream in streams:
         log.info(stream["id"])
         log.info(stream["url"])
-    # main()
-
-
+    main()
