@@ -5,21 +5,27 @@ from monitor.SimpleStreamMonitor import SimpleStreamMonitor
 
 
 class MonitorJob:
-    def __init__(self, stream_url, check_interval):
+    """
+    监控任务
+    """
+
+    def __init__(self, stream_id, stream_url, check_interval):
+        self.stream_id = stream_id
         self.stream_url = stream_url
         self.check_interval = check_interval
 
     def run(self):
-        """主函数示例"""
+        """
+        视频流监控
+        :return:
+        """
         logger.info("=== 流媒体可播放性监控系统 ===")
 
-        # 使用简化的监控器
-        stream_url = self.stream_url
-        check_interval = self.check_interval
-
+        # 使用监控器
         monitor = SimpleStreamMonitor(
-            stream_url=stream_url,  # 直播流地址
-            check_interval=check_interval  # x秒检查一次
+            stream_id=self.stream_id,
+            stream_url=self.stream_url,  # 直播流地址
+            check_interval=self.check_interval  # x秒检查一次
         )
 
         try:

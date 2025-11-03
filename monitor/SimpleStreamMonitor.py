@@ -9,7 +9,8 @@ from config.log4py import logger
 
 
 class SimpleStreamMonitor:
-    def __init__(self, stream_url, check_interval=5):
+    def __init__(self, stream_id, stream_url, check_interval=5):
+        self.stream_id = stream_id
         self.stream_url = stream_url
         self.check_interval = check_interval
         self.container = None
@@ -80,7 +81,7 @@ class SimpleStreamMonitor:
             return False
 
         self.running = True
-        logger.info("🚀 开始流监控...")
+        logger.info("🚀 开始流监控: %s %s", self.stream_id, self.stream_url)
 
         # 启动健康检查线程
         health_thread = threading.Thread(target=self.health_check_loop)

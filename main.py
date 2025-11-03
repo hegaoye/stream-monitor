@@ -2,6 +2,7 @@ import threading
 
 from config.ConfigLoader import get_config
 from config.log4py import logger
+from job.monitor_job import MonitorJob
 from monitor.SimpleStreamMonitor import SimpleStreamMonitor
 
 
@@ -40,6 +41,10 @@ if __name__ == '__main__':
     logger.info(config.get("monitoring.playability.health_checks.connection_timeout"))
     streams = config.get("streams")
     for stream in streams:
-        logger.info(stream["id"])
-        logger.info(stream["url"])
-    main()
+        stream_id = stream["id"]
+        stream_url = stream["url"]
+
+        logger.info("视频 id: %s , url: %s", stream_id, stream_url)
+        check_interval = config.get("monitoring.general.check_interval")
+        monitor_job = MonitorJob(stream_id, stream_url, check_interval)
+        monitor_job.run()
