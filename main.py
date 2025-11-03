@@ -2,7 +2,6 @@ import time
 
 from config.ConfigLoader import get_config
 from config.log4py import logger
-from job.monitor_job import MonitorJob
 from job.monitor_manager import MonitorManager
 
 

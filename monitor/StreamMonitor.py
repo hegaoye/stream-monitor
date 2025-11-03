@@ -5,6 +5,7 @@ from datetime import datetime
 
 import av
 
+from config.WebhookSender import WebhookSender
 from config.log4py import logger
 
 
@@ -19,6 +20,7 @@ class StreamMonitor:
         self.check_interval = check_interval
         self.container = None
         self.running = False
+        self.webhook_sender = WebhookSender()
 
         # 监控状态
         self.stats = {
@@ -151,11 +153,11 @@ class StreamMonitor:
         视频监控信息
         """
 
-        timestamp = datetime.now().strftime('%D %H:%M:%S')
+        timestamp = datetime.now().isoformat()
         status_icon = "✅" if health['playable'] else "❌"
         delay_display = f"{health['estimated_delay']}" if health['estimated_delay'] else "N/A"
 
-        monitor_record = {
+        monitor_data = {
             "streamId": self.stream_id,
             "streamUrl": self.stream_url,
             "playable": health['playable'],
@@ -167,7 +169,7 @@ class StreamMonitor:
             "timestamp": timestamp
         }
 
-        logger.info(monitor_record)
+        logger.info(monitor_data)
         logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} "
                     f"{self.stream_id} | "
                     f"可播放: {health['playable']} | "
@@ -175,6 +177,19 @@ class StreamMonitor:
                     f"延迟ms: {delay_display:>6} | "
                     f"视频包: {self.stats['video_packets']} | "
                     f"关键帧: {self.stats['keyframes']}")
+
+        # 发送 Webhook 警报
+        if not monitor_data['playable']:  # 流不可播放时发送
+            message = f"流 {self.stream_id} 不可播放"
+        elif monitor_data['quality'] == 'poor':  # 质量差时发送
+            message = f"流 {self.stream_id} 质量差"
+        else:
+            message = f"流 {self.stream_id} 连接成功"
+
+        self.webhook_sender.send_alert({
+            **monitor_data,
+            "message": message
+        })
 
         # 显示问题
         for issue in health['issues']:
