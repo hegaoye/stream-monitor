@@ -1,4 +1,3 @@
-import logging
 import threading
 import time
 from collections import deque
@@ -6,9 +5,7 @@ from datetime import datetime
 
 import av
 
-# 配置日志
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
+from config.log4py import logger
 
 
 class SimpleStreamMonitor:
@@ -43,10 +40,10 @@ class SimpleStreamMonitor:
 
             self.container = av.open(self.stream_url, options=options)
             self.stats['start_time'] = datetime.now()
-            log.info(f"✅ 成功连接到: {self.stream_url}")
+            logger.info(f"✅ 成功连接到: {self.stream_url}")
             return True
         except Exception as e:
-            log.info(f"❌ 连接失败: {e}")
+            logger.error(f"❌ 连接失败: {e}")
             return False
 
     def assess_stream_health(self):
@@ -83,7 +80,7 @@ class SimpleStreamMonitor:
             return False
 
         self.running = True
-        log.info("🚀 开始流监控...")
+        logger.info("🚀 开始流监控...")
 
         # 启动健康检查线程
         health_thread = threading.Thread(target=self.health_check_loop)
@@ -109,7 +106,7 @@ class SimpleStreamMonitor:
                     self.stats['audio_packets'] += 1
 
         except Exception as e:
-            log.info(f"监控错误: {e}")
+            logger.error(f"监控错误: {e}")
         finally:
             self.stop()
 
@@ -123,13 +120,13 @@ class SimpleStreamMonitor:
                 check_count += 1
 
                 # 打印状态
-                self.log.info_status(health, check_count)
+                self.print_status(health, check_count)
 
                 # 记录质量历史
                 self.quality_history.append(health['quality'])
 
             except Exception as e:
-                log.info(f"健康检查错误: {e}")
+                logger.error(f"健康检查错误: {e}")
 
             time.sleep(self.check_interval)
 
@@ -139,16 +136,16 @@ class SimpleStreamMonitor:
         status_icon = "✅" if health['playable'] else "❌"
         delay_display = f"{health['estimated_delay']}ms" if health['estimated_delay'] else "N/A"
 
-        log.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} "
-                 f"可播放: {health['playable']} | "
-                 f"质量: {health['quality']:6} | "
-                 f"延迟: {delay_display:>6} | "
-                 f"视频包: {self.stats['video_packets']} | "
-                 f"关键帧: {self.stats['keyframes']}")
+        logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} "
+                    f"可播放: {health['playable']} | "
+                    f"质量: {health['quality']:6} | "
+                    f"延迟: {delay_display:>6} | "
+                    f"视频包: {self.stats['video_packets']} | "
+                    f"关键帧: {self.stats['keyframes']}")
 
         # 显示问题
         for issue in health['issues']:
-            log.info(f"       ⚠️  {issue}")
+            logger.info(f"       ⚠️  {issue}")
 
     def stop(self):
         """停止监控"""
@@ -158,10 +155,10 @@ class SimpleStreamMonitor:
 
         # 打印总结
         total_time = (datetime.now() - self.stats['start_time']).seconds if self.stats['start_time'] else 0
-        log.info(f"\n📊 监控总结")
-        log.info(f"   运行时间: {total_time}秒")
-        log.info(f"   总包数: {self.stats['total_packets']}")
-        log.info(f"   视频包: {self.stats['video_packets']}")
-        log.info(f"   音频包: {self.stats['audio_packets']}")
-        log.info(f"   关键帧: {self.stats['keyframes']}")
-        log.info("🛑 流监控已停止")
+        logger.info(f"\n📊 监控总结")
+        logger.info(f"   运行时间: {total_time}秒")
+        logger.info(f"   总包数: {self.stats['total_packets']}")
+        logger.info(f"   视频包: {self.stats['video_packets']}")
+        logger.info(f"   音频包: {self.stats['audio_packets']}")
+        logger.info(f"   关键帧: {self.stats['keyframes']}")
+        logger.info("🛑 流监控已停止")

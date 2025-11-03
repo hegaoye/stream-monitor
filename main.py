@@ -1,20 +1,16 @@
-import logging
 import threading
 
 from config.ConfigLoader import get_config
+from config.log4py import logger
 from monitor.SimpleStreamMonitor import SimpleStreamMonitor
-
-# 配置日志
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
 
 
 def main():
     """主函数示例"""
-    print("=== 流媒体可播放性监控系统 ===")
+    logger.info("=== 流媒体可播放性监控系统 ===")
 
     # 使用简化的监控器
-    stream_url = "http://192.168.8.125/live/livestream.flv"
+    stream_url = "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
 
     monitor = SimpleStreamMonitor(
         stream_url=stream_url,
@@ -32,18 +28,18 @@ def main():
         time.sleep(300)  # 5分钟
 
     except KeyboardInterrupt:
-        print("\n用户中断监控")
+        logger.error("\n用户中断监控")
     finally:
         monitor.stop()
 
 
 if __name__ == '__main__':
-    log.info("启动 Stream Monitor 服务器...")
+    logger.info("启动 Stream Monitor 服务器...")
     config = get_config()
-    log.info(config.get("monitoring.playability.enabled"))
-    log.info(config.get("monitoring.playability.health_checks.connection_timeout"))
+    logger.info(config.get("monitoring.playability.enabled"))
+    logger.info(config.get("monitoring.playability.health_checks.connection_timeout"))
     streams = config.get("streams")
     for stream in streams:
-        log.info(stream["id"])
-        log.info(stream["url"])
+        logger.info(stream["id"])
+        logger.info(stream["url"])
     main()
