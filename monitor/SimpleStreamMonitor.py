@@ -135,12 +135,12 @@ class SimpleStreamMonitor:
         """打印状态信息"""
         timestamp = datetime.now().strftime('%D %H:%M:%S')
         status_icon = "✅" if health['playable'] else "❌"
-        delay_display = f"{health['estimated_delay']}ms" if health['estimated_delay'] else "N/A"
+        delay_display = f"{health['estimated_delay']}" if health['estimated_delay'] else "N/A"
 
         logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} "
                     f"可播放: {health['playable']} | "
                     f"质量: {health['quality']:6} | "
-                    f"延迟: {delay_display:>6} | "
+                    f"延迟ms: {delay_display:>6} | "
                     f"视频包: {self.stats['video_packets']} | "
                     f"关键帧: {self.stats['keyframes']}")
         monitor_record = {
