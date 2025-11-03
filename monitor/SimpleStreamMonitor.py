@@ -137,12 +137,6 @@ class SimpleStreamMonitor:
         status_icon = "✅" if health['playable'] else "❌"
         delay_display = f"{health['estimated_delay']}" if health['estimated_delay'] else "N/A"
 
-        logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} "
-                    f"可播放: {health['playable']} | "
-                    f"质量: {health['quality']:6} | "
-                    f"延迟ms: {delay_display:>6} | "
-                    f"视频包: {self.stats['video_packets']} | "
-                    f"关键帧: {self.stats['keyframes']}")
         monitor_record = {
             "streamId": self.stream_id,
             "streamUrl": self.stream_url,
@@ -156,6 +150,12 @@ class SimpleStreamMonitor:
         }
 
         logger.info(monitor_record)
+        logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} "
+                    f"可播放: {health['playable']} | "
+                    f"质量: {health['quality']:6} | "
+                    f"延迟ms: {delay_display:>6} | "
+                    f"视频包: {self.stats['video_packets']} | "
+                    f"关键帧: {self.stats['keyframes']}")
 
         # 显示问题
         for issue in health['issues']:
