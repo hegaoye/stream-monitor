@@ -8,7 +8,11 @@ import av
 from config.log4py import logger
 
 
-class SimpleStreamMonitor:
+class StreamMonitor:
+    """
+    视频流监控类
+    """
+
     def __init__(self, stream_id, stream_url, check_interval=5):
         self.stream_id = stream_id
         self.stream_url = stream_url
@@ -31,7 +35,10 @@ class SimpleStreamMonitor:
         self.quality_history = deque(maxlen=100)
 
     def connect(self):
-        """连接到流"""
+        """
+        连接到流
+        """
+
         try:
             options = {
                 'rtmp_live': 'live',
@@ -48,7 +55,10 @@ class SimpleStreamMonitor:
             return False
 
     def assess_stream_health(self):
-        """评估流健康状况"""
+        """
+        评估流健康状况
+        """
+
         current_time = time.time()
         health = {
             'playable': True,
@@ -76,7 +86,10 @@ class SimpleStreamMonitor:
         return health
 
     def start_monitoring(self):
-        """开始监控"""
+        """
+        开始监控
+        """
+
         if not self.connect():
             return False
 
@@ -137,6 +150,7 @@ class SimpleStreamMonitor:
         """
         视频监控信息
         """
+
         timestamp = datetime.now().strftime('%D %H:%M:%S')
         status_icon = "✅" if health['playable'] else "❌"
         delay_display = f"{health['estimated_delay']}" if health['estimated_delay'] else "N/A"
@@ -166,7 +180,10 @@ class SimpleStreamMonitor:
             logger.info(f"       ⚠️  {issue}")
 
     def stop(self):
-        """停止监控"""
+        """
+        停止监控
+        """
+
         self.running = False
         if self.container:
             self.container.close()

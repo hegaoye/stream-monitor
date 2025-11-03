@@ -3,7 +3,7 @@ import threading
 from config.ConfigLoader import get_config
 from config.log4py import logger
 from job.monitor_job import MonitorJob
-from monitor.SimpleStreamMonitor import SimpleStreamMonitor
+from monitor.StreamMonitor import StreamMonitor
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     # 使用简化的监控器
     stream_url = "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
 
-    monitor = SimpleStreamMonitor(
+    monitor = StreamMonitor(
         stream_url=stream_url,
         check_interval=5  # 5秒检查一次
     )

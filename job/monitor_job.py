@@ -1,7 +1,7 @@
 import threading
 
 from config.log4py import logger
-from monitor.SimpleStreamMonitor import SimpleStreamMonitor
+from monitor.StreamMonitor import StreamMonitor
 
 
 class MonitorJob:
@@ -22,7 +22,7 @@ class MonitorJob:
         logger.info("=== 流媒体可播放性监控系统 ===")
 
         # 使用监控器
-        monitor = SimpleStreamMonitor(
+        monitor = StreamMonitor(
             stream_id=self.stream_id,
             stream_url=self.stream_url,  # 直播流地址
             check_interval=self.check_interval  # x秒检查一次
