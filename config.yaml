@@ -7,14 +7,6 @@ monitoring:
 streams:
   - id: "video1"
     url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
-  - id: "video2"
-    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
-  - id: "video3"
-    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
-  - id: "video4"
-    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
-  - id: "video5"
-    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
 
 
 # 报警配置
