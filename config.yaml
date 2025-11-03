@@ -3,7 +3,7 @@ monitoring:
   # 通用设置
   general:
     log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
-    check_interval: 5  # 检查间隔(秒)
+    check_interval: 10  # 检查间隔(秒)
     max_samples: 1000  # 最大样本数
 
   # 可播放性监控

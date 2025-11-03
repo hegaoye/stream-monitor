@@ -35,9 +35,8 @@ class MonitorJob:
             monitor_thread.daemon = True
             monitor_thread.start()
 
-            # 等待5分钟或用户中断
-            time.sleep(300)  # 5分钟
-
+            # 这会一直等待直到线程结束
+            monitor_thread.join()
         except KeyboardInterrupt:
             logger.error("\n用户中断监控")
         finally:
