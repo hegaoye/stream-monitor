@@ -133,7 +133,7 @@ class SimpleStreamMonitor:
 
     def print_status(self, health, check_count):
         """打印状态信息"""
-        timestamp = datetime.now().strftime('%H:%M:%S')
+        timestamp = datetime.now().strftime('%D %H:%M:%S')
         status_icon = "✅" if health['playable'] else "❌"
         delay_display = f"{health['estimated_delay']}ms" if health['estimated_delay'] else "N/A"
 
@@ -143,6 +143,19 @@ class SimpleStreamMonitor:
                     f"延迟: {delay_display:>6} | "
                     f"视频包: {self.stats['video_packets']} | "
                     f"关键帧: {self.stats['keyframes']}")
+        monitor_record = {
+            "streamId": self.stream_id,
+            "streamUrl": self.stream_url,
+            "playable": health['playable'],
+            "quality": health['quality'],
+            "delay": delay_display,
+            "videoPackets": self.stats['video_packets'],
+            "keyframes": self.stats['keyframes'],
+            "count": check_count,
+            "timestamp": timestamp
+        }
+
+        logger.info(monitor_record)
 
         # 显示问题
         for issue in health['issues']:
