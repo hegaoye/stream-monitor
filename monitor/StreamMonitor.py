@@ -169,6 +169,7 @@ class StreamMonitor:
 
         logger.info(monitor_record)
         logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} "
+                    f"{self.stream_id} | "
                     f"可播放: {health['playable']} | "
                     f"质量: {health['quality']:6} | "
                     f"延迟ms: {delay_display:>6} | "

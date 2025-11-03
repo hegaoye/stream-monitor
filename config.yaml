@@ -2,8 +2,7 @@
 monitoring:
   # 通用设置
   general:
-    log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
-    check_interval: 10  # 检查间隔(秒)
+    check_interval: 5  # 检查间隔(秒)
     max_samples: 1000  # 最大样本数
 
   # 可播放性监控
@@ -27,6 +26,14 @@ monitoring:
 # 流地址配置
 streams:
   - id: "video1"
+    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
+  - id: "video2"
+    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
+  - id: "video3"
+    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
+  - id: "video4"
+    url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
+  - id: "video5"
     url: "https://bt-01-pull.g33-video.com/nw35/8-351.flv"
 
 

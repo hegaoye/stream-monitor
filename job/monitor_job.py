@@ -6,38 +6,68 @@ from monitor.StreamMonitor import StreamMonitor
 
 class MonitorJob:
     """
-    监控任务
+    监控任务 - 多线程版本
     """
 
     def __init__(self, stream_id, stream_url, check_interval):
         self.stream_id = stream_id
         self.stream_url = stream_url
         self.check_interval = check_interval
+        self.monitor = None
+        self.running = False
+        self.thread = None
 
-    def run(self):
+    def start(self):
         """
-        视频流监控
-        :return:
+        启动监控任务
         """
-        logger.info("=== 流媒体可播放性监控系统 ===")
+        if self.running:
+            logger.warning(f"监控任务 {self.stream_id} 已经在运行")
+            return
 
-        # 使用监控器
-        monitor = StreamMonitor(
+        self.running = True
+        self.thread = threading.Thread(target=self._run_monitor, daemon=True)
+        self.thread.start()
+        logger.info(f"启动监控任务: {self.stream_id}")
+
+    def stop(self):
+        """
+        停止监控任务
+        """
+        self.running = False
+        if self.monitor:
+            self.monitor.stop()
+        logger.info(f"停止监控任务: {self.stream_id}")
+
+    def _run_monitor(self):
+        """
+        监控任务的主循环
+        """
+        logger.info(f"=== 开始监控流: {self.stream_id} ===")
+
+        # 这里需要根据实际的 StreamMonitor 类进行调整
+        self.monitor = StreamMonitor(
             stream_id=self.stream_id,
-            stream_url=self.stream_url,  # 直播流地址
-            check_interval=self.check_interval  # x秒检查一次
+            stream_url=self.stream_url,
+            check_interval=self.check_interval
         )
 
         try:
-            # 启动监控（运行5分钟）
-            import time
-            monitor_thread = threading.Thread(target=monitor.start_monitoring)
+            # 启动监控
+            monitor_thread = threading.Thread(target=self.monitor.start_monitoring)
             monitor_thread.daemon = True
             monitor_thread.start()
-
-            # 这会一直等待直到线程结束
             monitor_thread.join()
-        except KeyboardInterrupt:
-            logger.error("中断监控")
+
+        except Exception as e:
+            logger.error(f"监控任务 {self.stream_id} 发生错误: {e}")
         finally:
-            monitor.stop()
+            if self.monitor:
+                self.monitor.stop()
+            logger.info(f"监控任务 {self.stream_id} 已结束")
+
+    def is_running(self):
+        """
+        检查任务是否在运行
+        """
+        return self.running and self.thread and self.thread.is_alive()
