@@ -41,7 +41,7 @@ class SimpleStreamMonitor:
 
             self.container = av.open(self.stream_url, options=options)
             self.stats['start_time'] = datetime.now()
-            logger.info(f"✅ 成功连接到: {self.stream_url}")
+            logger.info(f"✅ 成功连接到: {self.stream_id}")
             return True
         except Exception as e:
             logger.error(f"❌ 连接失败: {e}")
@@ -81,7 +81,7 @@ class SimpleStreamMonitor:
             return False
 
         self.running = True
-        logger.info("🚀 开始流监控: %s %s", self.stream_id, self.stream_url)
+        logger.info("🚀 开始流监控: %s", self.stream_id)
 
         # 启动健康检查线程
         health_thread = threading.Thread(target=self.health_check_loop)
