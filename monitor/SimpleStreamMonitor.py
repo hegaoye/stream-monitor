@@ -112,7 +112,9 @@ class SimpleStreamMonitor:
             self.stop()
 
     def health_check_loop(self):
-        """健康检查循环"""
+        """
+        健康检查循环
+        """
         check_count = 0
 
         while self.running:
@@ -132,7 +134,9 @@ class SimpleStreamMonitor:
             time.sleep(self.check_interval)
 
     def print_status(self, health, check_count):
-        """打印状态信息"""
+        """
+        视频监控信息
+        """
         timestamp = datetime.now().strftime('%D %H:%M:%S')
         status_icon = "✅" if health['playable'] else "❌"
         delay_display = f"{health['estimated_delay']}" if health['estimated_delay'] else "N/A"
