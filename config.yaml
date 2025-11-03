@@ -1,27 +1,7 @@
 # 监控配置
 monitoring:
-  # 通用设置
-  general:
-    check_interval: 5  # 检查间隔(秒)
-    max_samples: 1000  # 最大样本数
-
-  # 可播放性监控
-  playability:
-    enabled: true
-    health_checks:
-      connection_timeout: 10     # 连接超时(秒)
-      packet_timeout: 15         # 数据包超时(秒)
-      keyframe_timeout: 30       # 关键帧超时(秒)
-    quality_thresholds:
-      good_packet_rate: 50       # 优秀包率(包/秒)
-      fair_packet_rate: 20       # 良好包率(包/秒)
-
-  # 延迟监控
-  latency:
-    enabled: true
-    warning_threshold: 3000      # 警告阈值(毫秒)
-    critical_threshold: 5000     # 严重阈值(毫秒)
-    smoothing_window: 10         # 平滑窗口大小
+  check_interval: 5  # 检查间隔(秒)
+  max_samples: 1000  # 最大样本数
 
 # 流地址配置
 streams:

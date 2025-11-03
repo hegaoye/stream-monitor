@@ -11,8 +11,6 @@ def main():
     """
     logger.info("启动 Stream Monitor 服务器...")
     config = get_config()
-    logger.info(config.get("monitoring.playability.enabled"))
-    logger.info(config.get("monitoring.playability.health_checks.connection_timeout"))
     streams = config.get("streams")
 
     # 创建监控管理器
@@ -22,7 +20,7 @@ def main():
     for stream in streams:
         stream_id = stream["id"]
         stream_url = stream["url"]
-        check_interval = config.get("monitoring.general.check_interval")
+        check_interval = config.get("monitoring.check_interval")
 
         logger.info("视频 id: %s , url: %s", stream_id, stream_url)
         manager.add_stream(stream_id, stream_url, check_interval)
