@@ -38,6 +38,6 @@ class MonitorJob:
             # 这会一直等待直到线程结束
             monitor_thread.join()
         except KeyboardInterrupt:
-            logger.error("\n用户中断监控")
+            logger.error("中断监控")
         finally:
             monitor.stop()
