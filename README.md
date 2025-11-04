@@ -111,7 +111,21 @@ webhook 举例：
 ## Build
 
 ```shell
+#打包
 docker build -t stream-monitor:latest .
+
+#测试运行
+docker run --rm stream-monitor:latest
+```
+
+## Test
+
+```shell
+#测试运行
+docker run --rm stream-monitor:latest
+
+#进入容器测试
+docker run -it --rm stream-monitor:latest /bin/bash
 ```
 
 ## Run

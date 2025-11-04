@@ -1,28 +1,32 @@
-FROM python:3.9-slim
+FROM python:3.9-slim-bullseye
 
-# 设置工作目录
 WORKDIR /app
 
 # 设置环境变量
-ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED=1
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
+ENV PYTHONPATH=/app \
+    PYTHONUNBUFFERED=1 \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
-# 安装系统依赖（修复包名和语法）
+# 使用更稳定的 Debian 11 (bullseye) 源
 RUN apt-get update && apt-get install -y \
     ffmpeg \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# 复制 requirements.txt 并安装 Python 依赖
+# 复制 requirements 并安装
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制应用代码
 COPY . .
 
-# 设置启动命令
-ENTRYPOINT ["python", "main.py"]
+# 创建日志目录
+RUN mkdir -p logs
+
+# 设置非 root 用户
+RUN groupadd -r monitor && useradd -r -g monitor monitor \
+    && chown -R monitor:monitor /app
+USER monitor
+
+CMD ["python", "main.py"]
