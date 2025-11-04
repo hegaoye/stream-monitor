@@ -104,3 +104,18 @@ webhook 举例：
   }
 }
 ```
+
+
+# Docker
+
+## Build
+
+```shell
+docker build -t stream-monitor:latest .
+```
+
+## Run
+
+```shell
+docker run  --name stream-monitor  -v /home/config/config.yaml:/app/config.yaml  --restart always -d stream-monitor:latest
+```
