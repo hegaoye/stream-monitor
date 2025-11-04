@@ -11,5 +11,5 @@ streams:
 
 # 报警配置
 webhook:
-  enabled: true
+  enabled: false
   url: "http://localhost:8080/alerts"
