@@ -54,11 +54,7 @@ class MonitorJob:
 
         try:
             # 启动监控
-            monitor_thread = threading.Thread(target=self.monitor.start_monitoring)
-            monitor_thread.daemon = True
-            monitor_thread.start()
-            monitor_thread.join()
-
+            self.monitor.start_monitoring()
         except Exception as e:
             logger.error(f"监控任务 {self.stream_id} 发生错误: {e}")
         finally:
