@@ -128,7 +128,7 @@ docker run --rm stream-monitor:latest
 docker run -it --rm stream-monitor:latest /bin/bash
 
 #进入容器测试
-docker run -it --entrypoint /bin/sh  stream-monitor:latest
+docker run -it --entrypoint /bin/sh  stream-monitor-debug
 ```
 
 ## Run

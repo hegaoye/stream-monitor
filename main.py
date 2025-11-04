@@ -34,6 +34,7 @@ def main():
 
         # 主循环：定期显示状态并保持运行
         while manager.running:
+            logger.info("定期显示状态并保持运行 开始监听")
             # 每30秒显示一次状态
             time.sleep(30)
             status = manager.get_status()
