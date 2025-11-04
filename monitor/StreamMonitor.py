@@ -6,7 +6,6 @@ from datetime import datetime
 
 import av
 import numpy as np
-from prettytable import PrettyTable
 from tabulate import tabulate
 
 from config.WebhookSender import WebhookSender
@@ -412,7 +411,8 @@ class StreamMonitor:
         # 构建2行表格数据
         table_data = [
             # 第一行：标题
-            ["检查次数", "视频流ID", "播放状态", "视频流质量", "视频延迟", "视频包数", "关键帧", "码率", "帧率", "GOP统计"],
+            ["检查次数", "视频流ID", "播放状态", "视频流质量", "视频延迟", "视频包数", "关键帧", "码率", "帧率",
+             "GOP统计"],
             # 第二行：数据
             [
                 f"#{check_count:03d} {status_icon}",
