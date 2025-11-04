@@ -6,7 +6,7 @@ monitoring:
 # 流地址配置
 streams:
   - id: "video2"
-    url: "https://bt-01-pull.g33-video.com/nw27/8-271.flv"
+    url: "https://demo.com/nw27/8-271.flv"
 
 
 # 报警配置
