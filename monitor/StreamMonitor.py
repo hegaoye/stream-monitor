@@ -157,14 +157,9 @@ class StreamMonitor:
             # 计算对比度 (标准差)
             contrast = np.std(np_frame)
 
-            # 计算锐度 (使用拉普拉斯方差)
-            gray = cv2.cvtColor(np_frame, cv2.COLOR_BGR2GRAY) if len(np_frame.shape) == 3 else np_frame
-            laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
-
             return {
                 'brightness': brightness,
                 'contrast': contrast,
-                'sharpness': laplacian_var,
                 'resolution': (frame.width, frame.height)
             }
         except Exception as e:
@@ -366,7 +361,6 @@ class StreamMonitor:
         打印增强版监控信息
         """
         timestamp = datetime.now().strftime('%m/%d/%y %H:%M:%S')
-        status_icon = "✅" if health['playable'] else "❌"
         delay_display = f"{health['estimated_delay']}" if health['estimated_delay'] else "N/A"
 
         # 格式化码率显示
@@ -399,49 +393,14 @@ class StreamMonitor:
 
         logger.info(monitor_data)
 
-        # # 增强的状态显示
-        # logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} {self.stream_id}")
-        # logger.info(f"   可播放: {health['playable']} | 质量: {health['quality']:6} | 延迟: {delay_display:>6}ms")
-        # logger.info(f"   视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}")
-        # logger.info(
-        #     f"   码率: {current_bitrate_kbps:.1f}kbps (平均: {avg_bitrate_kbps:.1f}kbps) | 稳定性: {health['bitrate_stability']}")
-        # logger.info(f"   帧率: {self.deep_stats['frame_rate']:.1f}fps | 分辨率: {resolution_display}")
-        # logger.info(f"   编码: {self.deep_stats['codec']} | GOP: {self.deep_stats['gop_size']}帧")
-
-        # 构建2行表格数据
-        table_data = [
-            # 第一行：标题
-            ["检查次数", "视频流ID", "播放状态", "视频流质量", "视频延迟", "视频包数", "关键帧", "码率", "帧率",
-             "GOP统计"],
-            # 第二行：数据
-            [
-                f"#{check_count:03d} {status_icon}",
-                self.stream_id,
-                "可播放" if health['playable'] else "不可播放",
-                health['quality'],
-                f"{delay_display} ms",
-                str(self.stats['video_packets']),
-                str(self.stats['keyframes']),
-                f"{self.deep_stats['current_bitrate'] / 1000:.1f}k",
-                f"{self.deep_stats['frame_rate']:.1f}",
-                str(self.deep_stats['gop_size'])
-            ]
-        ]
-
-        # 使用紧凑的表格格式
-        table = tabulate(
-            table_data,
-            headers="firstrow",  # 第一行作为表头
-            tablefmt="simple",  # 简单格式，线条清晰
-            stralign="center",
-            numalign="center",
-            colalign=("center", "center", "center", "center", "center", "center", "center", "center", "center",
-                      "center")
-        )
-
-        # 输出美化表格
-        logger.info(f"\n📊 流监控报告 - {self.stream_id}")
-        logger.info(f"\n{table}\n")
+        # 增强的状态显示
+        logger.info(f"[{timestamp}] 检查#{check_count:03d} {self.stream_id}")
+        logger.info(f"   可播放: {health['playable']} | 质量: {health['quality']:6} | 延迟: {delay_display:>6}ms")
+        logger.info(f"   视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}")
+        logger.info(
+            f"   码率: {current_bitrate_kbps:.1f}kbps (平均: {avg_bitrate_kbps:.1f}kbps) | 稳定性: {health['bitrate_stability']}")
+        logger.info(f"   帧率: {self.deep_stats['frame_rate']:.1f}fps | 分辨率: {resolution_display}")
+        logger.info(f"   编码: {self.deep_stats['codec']} | GOP: {self.deep_stats['gop_size']}帧")
 
         # 发送 Webhook 警报
         if not monitor_data['playable']:  # 流不可播放时发送
