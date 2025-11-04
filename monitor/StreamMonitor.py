@@ -402,16 +402,16 @@ class StreamMonitor:
 
         # 发送 Webhook 警报
         if not monitor_data['playable']:  # 流不可播放时发送
-            message = f"流 {self.stream_id} 不可播放"
+            message = f"stream {self.stream_id} can not be played"
             alert_level = "error"
         elif monitor_data['quality'] == 'poor':  # 质量差时发送
-            message = f"流 {self.stream_id} 质量差"
+            message = f"stream {self.stream_id} quality is poor"
             alert_level = "warning"
         elif monitor_data['bitrateStability'] == 'unstable':  # 码率不稳定
-            message = f"流 {self.stream_id} 码率不稳定"
+            message = f"stream {self.stream_id} bitrate is unstable"
             alert_level = "warning"
         else:
-            message = f"流 {self.stream_id} 运行正常"
+            message = f"stream {self.stream_id} running ok"
             alert_level = "info"
 
         self.webhook_sender.send_alert({
