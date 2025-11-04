@@ -6,7 +6,6 @@ from datetime import datetime
 
 import av
 import numpy as np
-from tabulate import tabulate
 
 from config.WebhookSender import WebhookSender
 from config.log4py import logger
