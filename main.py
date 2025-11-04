@@ -29,17 +29,17 @@ def main():
     manager.start_all()
 
     try:
-        logger.info("监控系统已启动，按 Ctrl+C 停止所有监控...")
-        logger.info("当前监控任务状态:")
+        logger.debug("监控系统已启动，按 Ctrl+C 停止所有监控...")
+        logger.debug("当前监控任务状态:")
 
         # 主循环：定期显示状态并保持运行
         while manager.running:
-            logger.info("定期显示状态并保持运行 开始监听")
+            logger.debug("定期显示状态并保持运行 开始监听")
             # 每30秒显示一次状态
             time.sleep(30)
             status = manager.get_status()
             running_count = sum(1 for s in status.values() if s['running'])
-            logger.info(f"状态报告 - 运行中: {running_count}/{len(status)}")
+            logger.debug(f"状态报告 - 运行中: {running_count}/{len(status)}")
 
             # 检查是否有任务异常停止
             for stream_id, info in status.items():
@@ -48,7 +48,7 @@ def main():
                     manager.start_stream(stream_id)
 
     except KeyboardInterrupt:
-        logger.info("\n收到停止信号...")
+        logger.error("\n收到停止信号...")
     finally:
         # 停止所有监控任务
         manager.stop_all()

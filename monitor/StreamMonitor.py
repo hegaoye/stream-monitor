@@ -6,6 +6,8 @@ from datetime import datetime
 
 import av
 import numpy as np
+from prettytable import PrettyTable
+from tabulate import tabulate
 
 from config.WebhookSender import WebhookSender
 from config.log4py import logger
@@ -398,14 +400,48 @@ class StreamMonitor:
 
         logger.info(monitor_data)
 
-        # 增强的状态显示
-        logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} {self.stream_id}")
-        logger.info(f"   可播放: {health['playable']} | 质量: {health['quality']:6} | 延迟: {delay_display:>6}ms")
-        logger.info(f"   视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}")
-        logger.info(
-            f"   码率: {current_bitrate_kbps:.1f}kbps (平均: {avg_bitrate_kbps:.1f}kbps) | 稳定性: {health['bitrate_stability']}")
-        logger.info(f"   帧率: {self.deep_stats['frame_rate']:.1f}fps | 分辨率: {resolution_display}")
-        logger.info(f"   编码: {self.deep_stats['codec']} | GOP: {self.deep_stats['gop_size']}帧")
+        # # 增强的状态显示
+        # logger.info(f"[{timestamp}] 检查#{check_count:03d} {status_icon} {self.stream_id}")
+        # logger.info(f"   可播放: {health['playable']} | 质量: {health['quality']:6} | 延迟: {delay_display:>6}ms")
+        # logger.info(f"   视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}")
+        # logger.info(
+        #     f"   码率: {current_bitrate_kbps:.1f}kbps (平均: {avg_bitrate_kbps:.1f}kbps) | 稳定性: {health['bitrate_stability']}")
+        # logger.info(f"   帧率: {self.deep_stats['frame_rate']:.1f}fps | 分辨率: {resolution_display}")
+        # logger.info(f"   编码: {self.deep_stats['codec']} | GOP: {self.deep_stats['gop_size']}帧")
+
+        # 构建2行表格数据
+        table_data = [
+            # 第一行：标题
+            ["检查次数", "视频流ID", "播放状态", "视频流质量", "视频延迟", "视频包数", "关键帧", "码率", "帧率", "GOP统计"],
+            # 第二行：数据
+            [
+                f"#{check_count:03d} {status_icon}",
+                self.stream_id,
+                "可播放" if health['playable'] else "不可播放",
+                health['quality'],
+                f"{delay_display} ms",
+                str(self.stats['video_packets']),
+                str(self.stats['keyframes']),
+                f"{self.deep_stats['current_bitrate'] / 1000:.1f}k",
+                f"{self.deep_stats['frame_rate']:.1f}",
+                str(self.deep_stats['gop_size'])
+            ]
+        ]
+
+        # 使用紧凑的表格格式
+        table = tabulate(
+            table_data,
+            headers="firstrow",  # 第一行作为表头
+            tablefmt="simple",  # 简单格式，线条清晰
+            stralign="center",
+            numalign="center",
+            colalign=("center", "center", "center", "center", "center", "center", "center", "center", "center",
+                      "center")
+        )
+
+        # 输出美化表格
+        logger.info(f"\n📊 流监控报告 - {self.stream_id}")
+        logger.info(f"\n{table}\n")
 
         # 发送 Webhook 警报
         if not monitor_data['playable']:  # 流不可播放时发送
@@ -452,24 +488,3 @@ class StreamMonitor:
         logger.info(f"   分辨率: {self.deep_stats['resolution'][0]}x{self.deep_stats['resolution'][1]}")
         logger.info(f"   编码: {self.deep_stats['codec']} ({self.deep_stats['profile']})")
         logger.info("🛑 流监控已停止")
-
-
-# 如果需要使用OpenCV进行帧分析，需要导入
-try:
-    import cv2
-except ImportError:
-    logger.warning("未安装OpenCV，帧质量分析功能将受限")
-
-
-    # 提供一个简单的替代实现
-    def dummy_analyze_frame_quality(frame):
-        return {
-            'brightness': 0,
-            'contrast': 0,
-            'sharpness': 0,
-            'resolution': (frame.width, frame.height) if hasattr(frame, 'width') else (0, 0)
-        }
-
-
-    # 替换分析方法
-    StreamMonitor._analyze_frame_quality = dummy_analyze_frame_quality
