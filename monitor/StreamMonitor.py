@@ -3,11 +3,21 @@ import time
 from collections import deque
 from datetime import datetime
 
-import av
 import numpy as np
 
 from config.WebhookSender import WebhookSender
 from config.log4py import logger
+
+# 全局锁，防止多线程同时初始化 PyAV
+av_lock = threading.Lock()
+
+try:
+    with av_lock:
+        import av
+    AV_AVAILABLE = True
+except Exception as e:
+    print(f"PyAV 导入失败: {e}")
+    AV_AVAILABLE = False
 
 
 class StreamMonitor:
@@ -66,22 +76,27 @@ class StreamMonitor:
         连接到流
         """
         try:
-            options = {
-                'rtmp_live': 'live',
-                'rtmp_buffer': '1000',
-                'timeout': '10000000',
-                'analyzeduration': '1000000',
-                'probesize': '500000'
-            }
+            # 使用全局锁保护 PyAV 操作
+            with av_lock:
+                options = {
+                    'rtmp_live': 'live',
+                    'rtmp_buffer': '1000',
+                    'timeout': '10000000',
+                    'analyzeduration': '1000000',
+                    'probesize': '500000'
+                }
 
-            self.container = av.open(self.stream_url, options=options)
-            self.stats['start_time'] = datetime.now()
+                self.container = av.open(self.stream_url, options=options)
+                self.stats['start_time'] = datetime.now()
 
-            # 尝试获取流信息
-            self._analyze_stream_info()
+                # 尝试获取流信息
+                self._analyze_stream_info()
 
-            logger.info(f"✅ 成功连接到: {self.stream_id}")
-            return True
+                logger.info(f"✅ 成功连接到: {self.stream_id}")
+                return True
+        except av.AVError as e:
+            logger.error(f"AVError 连接失败: {e}")
+            return False
         except Exception as e:
             logger.error(f"❌ 连接失败: {e}")
             return False
@@ -430,7 +445,11 @@ class StreamMonitor:
         """
         self.running = False
         if self.container:
-            self.container.close()
+            try:
+                with av_lock:  # 使用全局锁保护关闭操作
+                    self.container.close()
+            except:
+                pass
 
         # 打印详细总结
         total_time = (datetime.now() - self.stats['start_time']).seconds if self.stats['start_time'] else 0
