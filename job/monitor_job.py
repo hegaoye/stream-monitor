@@ -49,6 +49,7 @@ class MonitorJob:
         # 这里需要根据实际的 StreamMonitor 类进行调整
         self.monitor = StreamMonitor(
             stream_id=self.stream_id,
+            stream_name=self.stream_name,
             stream_url=self.stream_url,
             check_interval=self.check_interval
         )

@@ -16,8 +16,9 @@ class StreamMonitor:
     视频流监控类 - 增强版（支持码率、分辨率等深度分析）
     """
 
-    def __init__(self, stream_id, stream_url, check_interval=5):
+    def __init__(self, stream_id, stream_name, stream_url, check_interval=5):
         self.stream_id = stream_id
+        self.stream_name = stream_name
         self.stream_url = stream_url
         self.check_interval = check_interval
         self.container = None
@@ -373,6 +374,7 @@ class StreamMonitor:
 
         monitor_data = {
             "streamId": self.stream_id,
+            "streamName": self.stream_name,
             "streamUrl": self.stream_url,
             "playable": health['playable'],
             "quality": health['quality'],
@@ -394,7 +396,7 @@ class StreamMonitor:
         logger.info(monitor_data)
 
         # 增强的状态显示
-        logger.info(f"[{timestamp}] 检查#{check_count:03d} {self.stream_id}")
+        logger.info(f"[{timestamp}] 检查#{check_count:03d} {self.stream_id} {self.stream_name} ({self.stream_url})")
         logger.info(f"   可播放: {health['playable']} | 质量: {health['quality']:6} | 延迟: {delay_display:>6}ms")
         logger.info(f"   视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}")
         logger.info(
