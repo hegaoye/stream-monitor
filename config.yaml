@@ -5,8 +5,12 @@ monitoring:
 
 # 流地址配置
 streams:
-  - id: "video2"
-    url: "https://demo.com/nw27/8-271.flv"
+  - id: "videoId1"
+    name: "demo1"
+    url: "https://demo1.com/nw27/8-271.flv"
+  - id: "videoId2"
+    name: "demo2"
+    url: "https://demo2.com/nw27/8-271.flv"
 
 
 # 报警配置

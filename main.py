@@ -19,11 +19,12 @@ def main():
     # 添加所有流到监控列表
     for stream in streams:
         stream_id = stream["id"]
+        stream_name = stream["name"]
         stream_url = stream["url"]
         check_interval = config.get("monitoring.check_interval")
 
         logger.info("视频 id: %s , url: %s", stream_id, stream_url)
-        manager.add_stream(stream_id, stream_url, check_interval)
+        manager.add_stream(stream_id, stream_name, stream_url, check_interval)
 
     # 启动所有监控任务
     manager.start_all()

@@ -9,8 +9,9 @@ class MonitorJob:
     监控任务 - 多线程版本
     """
 
-    def __init__(self, stream_id, stream_url, check_interval):
+    def __init__(self, stream_id, stream_name, stream_url, check_interval):
         self.stream_id = stream_id
+        self.stream_name = stream_name
         self.stream_url = stream_url
         self.check_interval = check_interval
         self.monitor = None
@@ -22,7 +23,7 @@ class MonitorJob:
         启动监控任务
         """
         if self.running:
-            logger.warning(f"监控任务 {self.stream_id} 已经在运行")
+            logger.warning(f"监控任务 {self.stream_id} {self.stream_name} {self.stream_url} 已经在运行")
             return
 
         self.thread = threading.Thread(target=self._run_monitor, daemon=True)
@@ -37,13 +38,13 @@ class MonitorJob:
         self.running = False
         if self.monitor:
             self.monitor.stop()
-        logger.info(f"停止监控任务: {self.stream_id}")
+        logger.info(f"停止监控任务: {self.stream_id} {self.stream_name} {self.stream_url}")
 
     def _run_monitor(self):
         """
         监控任务的主循环
         """
-        logger.info(f"=== 开始监控流: {self.stream_id} ===")
+        logger.info(f"=== 开始监控流: {self.stream_id} {self.stream_name} {self.stream_url} ===")
 
         # 这里需要根据实际的 StreamMonitor 类进行调整
         self.monitor = StreamMonitor(
@@ -57,11 +58,11 @@ class MonitorJob:
             self.running = self.monitor.start_monitoring()
         except Exception as e:
             self.running = False
-            logger.error(f"监控任务 {self.stream_id} 发生错误: {e}")
+            logger.error(f"监控任务 {self.stream_id} {self.stream_name} {self.stream_url} 发生错误: {e}")
         finally:
             if self.monitor:
                 self.monitor.stop()
-            logger.info(f"监控任务 {self.stream_id} 已结束")
+            logger.info(f"监控任务 {self.stream_id} {self.stream_name} {self.stream_url} 已结束")
 
     def is_running(self):
         """

@@ -13,7 +13,7 @@ class MonitorManager:
         self.monitor_jobs: Dict[str, MonitorJob] = {}
         self.running = False
 
-    def add_stream(self, stream_id: str, stream_url: str, check_interval: int = 30):
+    def add_stream(self, stream_id: str, stream_name: str, stream_url: str, check_interval: int = 30):
         """
         添加要监控的流
         """
@@ -21,9 +21,9 @@ class MonitorManager:
             logger.warning(f"流 {stream_id} 已经在监控列表中")
             return False
 
-        job = MonitorJob(stream_id, stream_url, check_interval)
+        job = MonitorJob(stream_id, stream_name, stream_url, check_interval)
         self.monitor_jobs[stream_id] = job
-        logger.info(f"添加流到监控列表: {stream_id}")
+        logger.info(f"添加流到监控列表: {stream_id} {stream_name} {stream_url}")
         return True
 
     def start_all(self):
