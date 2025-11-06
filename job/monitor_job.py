@@ -25,9 +25,9 @@ class MonitorJob:
             logger.warning(f"监控任务 {self.stream_id} 已经在运行")
             return
 
-        self.running = True
         self.thread = threading.Thread(target=self._run_monitor, daemon=True)
         self.thread.start()
+        self.running = True
         logger.info(f"启动监控任务: {self.stream_id}")
 
     def stop(self):
@@ -54,8 +54,9 @@ class MonitorJob:
 
         try:
             # 启动监控
-            self.monitor.start_monitoring()
+            self.running = self.monitor.start_monitoring()
         except Exception as e:
+            self.running = False
             logger.error(f"监控任务 {self.stream_id} 发生错误: {e}")
         finally:
             if self.monitor:
