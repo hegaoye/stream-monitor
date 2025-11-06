@@ -404,12 +404,11 @@ class StreamMonitor:
 
         # 增强的状态显示
         logger.info(f"[{timestamp}] 检查#{check_count:03d} {self.stream_id} {self.stream_name} ({self.stream_url})")
-        logger.info(f"   可播放: {health['playable']} | 质量: {health['quality']:6} | 延迟: {delay_display:>6}ms")
-        logger.info(f"   视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}")
-        logger.info(
-            f"   码率: {current_bitrate_kbps:.1f}kbps (平均: {avg_bitrate_kbps:.1f}kbps) | 稳定性: {health['bitrate_stability']}")
-        logger.info(f"   帧率: {self.deep_stats['frame_rate']:.1f}fps | 分辨率: {resolution_display}")
-        logger.info(f"   编码: {self.deep_stats['codec']} | GOP: {self.deep_stats['gop_size']}帧")
+        logger.info(f"\n 可播放: {health['playable']} | 质量: {health['quality']:6}"
+                    f"\n 视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}"
+                    f"\n 码率: {current_bitrate_kbps:.1f}kbps (平均: {avg_bitrate_kbps:.1f}kbps) | 稳定性: {health['bitrate_stability']}"
+                    f"\n 帧率: {self.deep_stats['frame_rate']:.1f}fps | 分辨率: {resolution_display}"
+                    f"\n 编码: {self.deep_stats['codec']} | GOP: {self.deep_stats['gop_size']}帧")
 
         # 发送 Webhook 警报
         if not monitor_data['playable']:  # 流不可播放时发送
