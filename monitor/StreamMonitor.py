@@ -403,8 +403,8 @@ class StreamMonitor:
         logger.info(monitor_data)
 
         # 增强的状态显示
-        logger.info(f"[{timestamp}] 检查#{check_count:03d} {self.stream_id} {self.stream_name} ({self.stream_url})")
-        logger.info(f"\n 可播放: {health['playable']} | 质量: {health['quality']:6}"
+        logger.info(f"\n 检查 #{check_count:03d} {self.stream_id} {self.stream_name} ({self.stream_url})"
+                    f"\n 可播放: {health['playable']} | 质量: {health['quality']:6}"
                     f"\n 视频包: {self.stats['video_packets']} | 关键帧: {self.stats['keyframes']}"
                     f"\n 码率: {current_bitrate_kbps:.1f}kbps (平均: {avg_bitrate_kbps:.1f}kbps) | 稳定性: {health['bitrate_stability']}"
                     f"\n 帧率: {self.deep_stats['frame_rate']:.1f}fps | 分辨率: {resolution_display}"
