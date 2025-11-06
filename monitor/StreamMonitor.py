@@ -98,7 +98,7 @@ class StreamMonitor:
         分析流信息（分辨率、编码等）
         """
         try:
-            logging.info("=== 尝试获取{self.stream_id}流信息 ===")
+            logging.info(f"=== 尝试获取{self.stream_id}流信息 ===")
             video_stream = None
             for stream in self.container.streams:
                 if stream.type == 'video':
