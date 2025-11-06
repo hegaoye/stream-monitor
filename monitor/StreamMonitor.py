@@ -284,6 +284,7 @@ class StreamMonitor:
         开始监控
         """
         if not self.connect():
+            self.running = False
             return False
 
         self.running = True
