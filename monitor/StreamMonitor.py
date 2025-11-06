@@ -307,7 +307,7 @@ class StreamMonitor:
         bitrate_thread.start()
 
         try:
-            # 主监控循环
+            # 主监控循环 demux() 实时，持续监控流，直播结束，for循环结束
             for packet in self.container.demux():
                 if not self.running:
                     break
@@ -358,7 +358,6 @@ class StreamMonitor:
 
                 # 记录质量历史
                 self.quality_history.append(health['quality'])
-
             except Exception as e:
                 logger.error(f"健康检查错误: {self.stream_id} {self.stream_name} {self.stream_url}")
                 logger.error(f"健康检查错误: {e}")
