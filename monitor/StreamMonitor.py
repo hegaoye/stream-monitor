@@ -76,7 +76,7 @@ class StreamMonitor:
             #     'probesize': '500000'
             # }
 
-            logger.info(f"=== 尝试连接: {self.stream_id} 流 ===")
+            logger.info(f"=== 尝试连接: {self.stream_id} 流 {self.stream_name} {self.stream_url} ===")
             self.container = av.open(self.stream_url)
             # self.container = av.open(self.stream_url, options=options)
             self.stats['start_time'] = datetime.now()
@@ -84,12 +84,14 @@ class StreamMonitor:
             # 尝试获取流信息
             self._analyze_stream_info()
 
-            logger.info(f"✅ 成功连接到: {self.stream_id}")
+            logger.info(f"✅ 成功连接到: {self.stream_id} {self.stream_name} {self.stream_url}")
             return True
         except av.AVError as e:
-            logger.error(f"AVError 连接失败: {e}")
+            logger.error(f"❌AVError 连接失败: {self.stream_id} {self.stream_name} {self.stream_url}")
+            logger.error(f"❌AVError 连接失败: {e}")
             return False
         except Exception as e:
+            logger.error(f"❌ 连接失败: {self.stream_id} {self.stream_name} {self.stream_url}")
             logger.error(f"❌ 连接失败: {e}")
             return False
 
@@ -98,7 +100,7 @@ class StreamMonitor:
         分析流信息（分辨率、编码等）
         """
         try:
-            logging.info(f"=== 尝试获取{self.stream_id}流信息 ===")
+            logging.info(f"=== 尝试获取{self.stream_id} {self.stream_name} {self.stream_url} 流信息 ===")
             video_stream = None
             for stream in self.container.streams:
                 if stream.type == 'video':
@@ -119,6 +121,7 @@ class StreamMonitor:
                 logger.info(f"📺 流信息 - 编码: {codec_name}, 分辨率: {video_stream.width}x{video_stream.height}")
 
         except Exception as e:
+            logger.warning(f"无法获取流信息: {self.stream_id} {self.stream_name} {self.stream_url}")
             logger.warning(f"无法获取流信息: {e}")
 
     def _calculate_bitrate(self):
@@ -163,7 +166,8 @@ class StreamMonitor:
                 'resolution': (frame.width, frame.height)
             }
         except Exception as e:
-            logger.debug(f"帧质量分析失败: {e}")
+            logger.error(f"帧质量分析失败: {self.stream_id} {self.stream_name} {self.stream_url}")
+            logger.error(f"帧质量分析失败: {e}")
             return None
 
     def _calculate_frame_rate(self):
@@ -217,7 +221,8 @@ class StreamMonitor:
 
                     self.deep_stats['last_frame_analysis'] = current_time
                 except Exception as e:
-                    logger.debug(f"帧解码失败: {e}")
+                    logger.error(f"帧解码失败: {self.stream_id} {self.stream_name} {self.stream_url}")
+                    logger.error(f"帧解码失败: {e}")
 
     def assess_stream_health(self):
         """
@@ -289,7 +294,7 @@ class StreamMonitor:
             return False
 
         self.running = True
-        logger.info("🚀 开始流监控: %s", self.stream_id)
+        logger.info(f"🚀 开始流监控: {self.stream_id} {self.stream_name} {self.stream_url}")
 
         # 启动健康检查线程
         health_thread = threading.Thread(target=self.health_check_loop)
@@ -319,6 +324,7 @@ class StreamMonitor:
                     self.byte_count += packet.size  # 音频包也计入码率
 
         except Exception as e:
+            logger.error(f"监控错误: {self.stream_id} {self.stream_name} {self.stream_url}")
             logger.error(f"监控错误: {e}")
         finally:
             self.stop()
@@ -331,6 +337,7 @@ class StreamMonitor:
             try:
                 self._calculate_bitrate()
             except Exception as e:
+                logger.error(f"码率计算错误: {self.stream_id} {self.stream_name} {self.stream_url}")
                 logger.error(f"码率计算错误: {e}")
 
             time.sleep(1)  # 每秒计算一次
@@ -353,6 +360,7 @@ class StreamMonitor:
                 self.quality_history.append(health['quality'])
 
             except Exception as e:
+                logger.error(f"健康检查错误: {self.stream_id} {self.stream_name} {self.stream_url}")
                 logger.error(f"健康检查错误: {e}")
 
             time.sleep(self.check_interval)
