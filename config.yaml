@@ -5,11 +5,11 @@ monitoring:
 
 # 流地址配置
 streams:
-  - id: "videoId1"
-    name: "demo1"
+  - id: "videoId1" #视频唯一 id
+    name: "demo1"  #视频名称可重复
     url: "https://demo1.com/nw27/8-271.flv"
   - id: "videoId2"
-    name: "demo2"
+    name: "demo1"
     url: "https://demo2.com/nw27/8-271.flv"
 
 
