@@ -439,7 +439,7 @@ class StreamMonitor:
         # 打印详细总结
         total_time = (datetime.now() - self.stats['start_time']).seconds if self.stats['start_time'] else 0
 
-        logger.info(f"\n📊 深度监控总结 - {self.stream_id}")
+        logger.info(f"\n📊 深度监控总结 - {self.stream_id} {self.stream_name} ({self.stream_url})")
         logger.info(f"   运行时间: {total_time}秒")
         logger.info(f"   总包数: {self.stats['total_packets']}")
         logger.info(f"   视频包: {self.stats['video_packets']} | 音频包: {self.stats['audio_packets']}")
