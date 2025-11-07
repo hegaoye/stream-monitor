@@ -316,7 +316,7 @@ class StreamMonitor:
 
         while self.running:
             current_time = time.time()
-            #默认超过10s则需要退出监控
+            #默认超过10s则需要退出监控，通过重启监控机制恢复监控
             if current_time - self.heart_beat_time > 10:
                 self.stop()
                 self._force_stop_thread(packet_thread)
