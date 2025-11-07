@@ -498,13 +498,13 @@ class StreamMonitor:
         # 打印详细总结
         total_time = (datetime.now() - self.stats['start_time']).seconds if self.stats['start_time'] else 0
 
-        logger.info(f"\n📊 深度监控总结 - {self.stream_id} {self.stream_name} ({self.stream_url})")
-        logger.info(f"   运行时间: {total_time}秒")
-        logger.info(f"   总包数: {self.stats['total_packets']}")
-        logger.info(f"   视频包: {self.stats['video_packets']} | 音频包: {self.stats['audio_packets']}")
-        logger.info(f"   关键帧: {self.stats['keyframes']}")
-        logger.info(f"   平均码率: {self.deep_stats['average_bitrate'] / 1000:.1f} kbps")
-        logger.info(f"   平均帧率: {self.deep_stats['frame_rate']:.1f} fps")
-        logger.info(f"   分辨率: {self.deep_stats['resolution'][0]}x{self.deep_stats['resolution'][1]}")
-        logger.info(f"   编码: {self.deep_stats['codec']} ({self.deep_stats['profile']})")
-        logger.info("🛑 流监控已停止")
+        logger.info(f"\n📊 深度监控总结 - {self.stream_id} {self.stream_name} ({self.stream_url})"
+                    f"\n运行时间: {total_time}秒"
+                    f"\n总包数: {self.stats['total_packets']}"
+                    f"\n视频包: {self.stats['video_packets']} | 音频包: {self.stats['audio_packets']}"
+                    f"\n关键帧: {self.stats['keyframes']}"
+                    f"\n平均码率: {self.deep_stats['average_bitrate'] / 1000:.1f} kbps"
+                    f"\n平均帧率: {self.deep_stats['frame_rate']:.1f} fps"
+                    f"\n分辨率: {self.deep_stats['resolution'][0]}x{self.deep_stats['resolution'][1]}"
+                    f"\n编码: {self.deep_stats['codec']} ({self.deep_stats['profile']})"
+                    f"\n🛑 流监控已停止")
