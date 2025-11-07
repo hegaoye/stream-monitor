@@ -1,4 +1,5 @@
 import threading
+import time
 
 from config.log4py import logger
 from monitor.StreamMonitor import StreamMonitor
@@ -17,6 +18,7 @@ class MonitorJob:
         self.monitor = None
         self.running = False
         self.thread = None
+        self._stop_event = threading.Event()
 
     def start(self):
         """
@@ -26,6 +28,7 @@ class MonitorJob:
             logger.warning(f"监控任务 {self.stream_id} {self.stream_name} {self.stream_url} 已经在运行")
             return
 
+        self._stop_event.clear()
         self.thread = threading.Thread(target=self._run_monitor, daemon=True)
         self.thread.start()
         self.running = True
@@ -36,8 +39,20 @@ class MonitorJob:
         停止监控任务
         """
         self.running = False
+        self._stop_event.set()
+
         if self.monitor:
             self.monitor.stop()
+
+        if self.thread and self.thread.is_alive():
+            try:
+                self.thread.join(timeout=5.0)  # 等待最多5秒
+                if self.thread.is_alive():
+                    logger.error(f"强制终止线程: {self.stream_id}")
+                    # 线程仍在运行，记录但继续执行
+            except Exception as e:
+                logger.error(f"停止线程时发生错误: {e}")
+
         logger.info(f"停止监控任务: {self.stream_id} {self.stream_name} {self.stream_url}")
 
     def _run_monitor(self):
@@ -55,14 +70,27 @@ class MonitorJob:
         )
 
         try:
-            # 启动监控
-            self.running = self.monitor.start_monitoring()
+            self.monitor = StreamMonitor(
+                stream_id=self.stream_id,
+                stream_name=self.stream_name,
+                stream_url=self.stream_url,
+                check_interval=self.check_interval
+            )
+
+            while not self._stop_event.is_set():
+                if not self.monitor.start_monitoring():
+                    break
+                time.sleep(0.1)  # 防止CPU过度使用
+
         except Exception as e:
-            self.running = False
             logger.error(f"监控任务 {self.stream_id} {self.stream_name} {self.stream_url} 发生错误: {e}")
         finally:
+            self.running = False
             if self.monitor:
-                self.monitor.stop()
+                try:
+                    self.monitor.stop()
+                except Exception as e:
+                    logger.error(f"停止监控器时发生错误: {e}")
             logger.info(f"监控任务 {self.stream_id} {self.stream_name} {self.stream_url} 已结束")
 
     def is_running(self):

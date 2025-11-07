@@ -1,3 +1,4 @@
+import ctypes
 import logging
 import threading
 import time
@@ -24,6 +25,7 @@ class StreamMonitor:
         self.container = None
         self.running = False
         self.webhook_sender = WebhookSender()
+        self.heart_beat_time = None
 
         # 基础监控状态
         self.stats = {
@@ -296,6 +298,12 @@ class StreamMonitor:
         self.running = True
         logger.info(f"🚀 开始流监控: {self.stream_id} {self.stream_name} {self.stream_url}")
 
+        # 启动视频流读取现成
+        packet_thread = threading.Thread(target=self.packet_loop)
+        packet_thread.daemon = True
+        packet_thread.start()
+        self.heart_beat_time = time.time()
+
         # 启动健康检查线程
         health_thread = threading.Thread(target=self.health_check_loop)
         health_thread.daemon = True
@@ -306,28 +314,50 @@ class StreamMonitor:
         bitrate_thread.daemon = True
         bitrate_thread.start()
 
+        while self.running:
+            current_time = time.time()
+            if current_time - self.heart_beat_time > 10:
+                self.stop()
+                self._force_stop_thread(packet_thread)
+                return False
+
+    def _force_stop_thread(self, thread):
+        """强制停止线程"""
         try:
-            # 主监控循环 demux() 实时，持续监控流，直播结束，for循环结束
-            for packet in self.container.demux():
-                if not self.running:
-                    break
+            # 方法1: 使用异步异常（Python 3.7+）
+            if hasattr(thread, '_thread_id'):
+                tid = thread._thread_id
+            else:
+                # 获取线程ID
+                for tid, tobj in threading._active.items():
+                    if tobj is thread:
+                        break
+                else:
+                    logger.error("无法找到线程ID")
+                    return
 
-                self.stats['total_packets'] += 1
-                self.stats['last_packet_time'] = time.time()
+            # 向线程发送异步异常
+            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+                ctypes.c_long(tid),
+                ctypes.py_object(SystemExit)
+            )
 
-                # 统计包类型
-                if packet.stream and packet.stream.type == 'video':
-                    self.stats['video_packets'] += 1
-                    self._analyze_video_packet(packet)
-                elif packet.stream and packet.stream.type == 'audio':
-                    self.stats['audio_packets'] += 1
-                    self.byte_count += packet.size  # 音频包也计入码率
+            if res == 0:
+                logger.error("无效的线程ID")
+            elif res != 1:
+                # 如果返回值大于1，需要清理
+                ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+                logger.error("强制终止线程失败")
+            else:
+                logger.info("已发送终止信号给线程")
+
+            # 等待线程结束
+            thread.join(timeout=3.0)
+            if thread.is_alive():
+                logger.error("线程仍然存活，可能需要更强制的手段")
 
         except Exception as e:
-            logger.error(f"监控错误: {self.stream_id} {self.stream_name} {self.stream_url}")
-            logger.error(f"监控错误: {e}")
-        finally:
-            self.stop()
+            logger.error(f"强制停止线程时出错: {e}")
 
     def bitrate_calculation_loop(self):
         """
@@ -341,6 +371,28 @@ class StreamMonitor:
                 logger.error(f"码率计算错误: {e}")
 
             time.sleep(1)  # 每秒计算一次
+
+    def packet_loop(self):
+        """
+        主监控循环 demux() 实时，持续监控流，直播结束，for循环结束
+        """
+        for packet in self.container.demux():
+            if not self.running:
+                break
+
+            self.stats['total_packets'] += 1
+            self.stats['last_packet_time'] = time.time()
+
+            # 统计包类型
+            if packet.stream and packet.stream.type == 'video':
+                self.stats['video_packets'] += 1
+                self._analyze_video_packet(packet)
+            elif packet.stream and packet.stream.type == 'audio':
+                self.stats['audio_packets'] += 1
+                self.byte_count += packet.size  # 音频包也计入码率
+
+            # 设置心跳时间
+            self.heart_beat_time = time.time()
 
     def health_check_loop(self):
         """
